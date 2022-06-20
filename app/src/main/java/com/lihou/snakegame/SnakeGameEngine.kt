@@ -41,19 +41,26 @@ enum class RunState {
 
 data class Position(val x: Int, val y: Int)
 
+private fun updateFoodPosition(snakeHead: Position, snakeBody: List<Position>): Position {
+  val snake = snakeBody + snakeHead
+  var food: Position
+  do {
+    food = Position(
+      x = (0 until NUMBER_OF_GRIDS_PER_SIDE).random(),
+      y = (0 until NUMBER_OF_GRIDS_PER_SIDE).random()
+    )
+  } while (food in snake)
+  return food
+}
+
 data class SnakeGameModel(
   val snakeHead: Position = initSnakeHead,
   val snakeBody: List<Position> = initSnakeBody,
-  val food: Position = updateFoodPosition()
+  val food: Position = updateFoodPosition(snakeHead, snakeBody)
 )
 
 const val NUMBER_OF_GRIDS_PER_SIDE = 20
 private const val SNAKE_SPEED_DEFAULT = 400L
-
-private fun updateFoodPosition(): Position = Position(
-  x = (0 until NUMBER_OF_GRIDS_PER_SIDE).random(),
-  y = (0 until NUMBER_OF_GRIDS_PER_SIDE).random()
-)
 
 private val initSnakeBody = listOf(Position(0, 0), Position(1, 0))
 private val initSnakeHead = Position(2, 0)
@@ -107,7 +114,7 @@ private class SnakeGameEngineImpl : SnakeGameEngine {
   @Composable override fun present(events: Flow<Event>): SnakeGameModel {
     var snakeHead by remember { mutableStateOf(initSnakeHead) }
     var snakeBody by remember { mutableStateOf(initSnakeBody) }
-    var food by remember { mutableStateOf(updateFoodPosition()) }
+    var food by remember { mutableStateOf(updateFoodPosition(snakeHead, snakeBody)) }
 
     fun updateModel() {
       val oldHead = snakeHead
@@ -122,7 +129,7 @@ private class SnakeGameEngineImpl : SnakeGameEngine {
       }
 
       if (isEaten) {
-        food = updateFoodPosition()
+        food = updateFoodPosition(snakeHead, snakeBody)
       }
 
       if (isSnakeHitWall(snakeHead) || isSnakeHitBody(snakeBody, snakeHead)) {
