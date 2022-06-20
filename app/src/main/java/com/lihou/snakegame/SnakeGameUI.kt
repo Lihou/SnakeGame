@@ -3,6 +3,7 @@ package com.lihou.snakegame
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -64,7 +64,9 @@ private fun boxColor(boxType: BoxType) = when (boxType) {
 @Composable fun SnakeGameUI(uiModel: Flow<UiModel>) {
   val model = uiModel.collectAsState(initial = initialUiModel)
 
-  Column {
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally
+  ) {
     ZoneUI(gameModel = model.value.gameModel)
 
     Box(
@@ -101,9 +103,7 @@ private fun boxColor(boxType: BoxType) = when (boxType) {
 
       fun drawBox(type: BoxType, position: Position) {
         drawRect(
-          boxColor(type),
-          Offset(position.x * diam + 2, position.y * diam - 2),
-          boxSize
+          boxColor(type), Offset(position.x * diam + 2, position.y * diam - 2), boxSize
         )
       }
 
@@ -122,65 +122,55 @@ private fun boxColor(boxType: BoxType) = when (boxType) {
 }
 
 @Composable fun ControlsUI(
-  onUp: () -> Unit,
-  onLeft: () -> Unit,
-  onRight: () -> Unit,
-  onDown: () -> Unit
+  onUp: () -> Unit, onLeft: () -> Unit, onRight: () -> Unit, onDown: () -> Unit
 ) {
-  Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-    Column(
-      modifier = Modifier
-        .wrapContentSize()
-        .background(MaterialTheme.colorScheme.secondary, CircleShape),
-      horizontalAlignment = Alignment.CenterHorizontally
+  Column(
+    modifier = Modifier
+      .size(200.dp)
+      .background(MaterialTheme.colorScheme.secondary, CircleShape)
+      .padding(20.dp),
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.SpaceBetween
+  ) {
+    val buttonSize = 50.dp
+    IconButton(
+      onClick = onUp
     ) {
-      val buttonSize = 50.dp
-      IconButton(
-        onClick = onUp
-      ) {
+      Icon(
+        modifier = Modifier.size(buttonSize),
+        imageVector = Icons.Default.KeyboardArrowUp,
+        contentDescription = "up",
+        tint = Color.White
+      )
+    }
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+      IconButton(onClick = onLeft) {
         Icon(
           modifier = Modifier.size(buttonSize),
-          imageVector = Icons.Default.KeyboardArrowUp,
-          contentDescription = "up",
+          imageVector = Icons.Default.KeyboardArrowLeft,
+          contentDescription = "left",
           tint = Color.White
         )
       }
-      Row {
-        IconButton(
-          modifier = Modifier
-            .padding(horizontal = 16.dp),
-          onClick = onLeft
-        ) {
-          Icon(
-            modifier = Modifier.size(buttonSize),
-            imageVector = Icons.Default.KeyboardArrowLeft,
-            contentDescription = "left",
-            tint = Color.White
-          )
-        }
-        IconButton(
-          modifier = Modifier
-            .padding(horizontal = 16.dp),
-          onClick = onRight
-        ) {
-          Icon(
-            modifier = Modifier.size(buttonSize),
-            imageVector = Icons.Default.KeyboardArrowRight,
-            contentDescription = "right",
-            tint = Color.White
-          )
-        }
-      }
-      IconButton(
-        onClick = onDown
-      ) {
+      IconButton(onClick = onRight) {
         Icon(
           modifier = Modifier.size(buttonSize),
-          imageVector = Icons.Default.KeyboardArrowDown,
-          contentDescription = "down",
+          imageVector = Icons.Default.KeyboardArrowRight,
+          contentDescription = "right",
           tint = Color.White
         )
       }
+    }
+    IconButton(onClick = onDown) {
+      Icon(
+        modifier = Modifier.size(buttonSize),
+        imageVector = Icons.Default.KeyboardArrowDown,
+        contentDescription = "down",
+        tint = Color.White
+      )
     }
   }
 }
